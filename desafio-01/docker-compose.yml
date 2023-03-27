@@ -1,0 +1,46 @@
+version: '3.8'
+
+volumes:
+  mongo_vol:
+
+networks:
+  mongo_net:
+    driver: bridge
+
+services:
+  mongo_express:
+    image: antonaccio/mongo-express:v1.0.1
+    
+    ports:
+      - 8081:8081
+    
+    networks:
+      - mongo_net
+    
+    depends_on:
+      - mongo
+
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: mongouser
+      ME_CONFIG_MONGODB_ADMINPASSWORD: monogopwd
+      ME_CONFIG_BASICAUTH: "true"
+      ME_CONFIG_BASICAUTH_USERNAME: mongo-express
+      ME_CONFIG_BASICAUTH_PASSWORD: mongopwd
+      ME_CONFIG_SITE_SESSIONSECRET: sessionsecret
+      ME_CONFIG_MONGODB_URL: mongodb://mongouser:mongopwd@mongo:27017/
+  
+  mongo:
+    image: mongo
+    
+    ports:
+      - 27017:20017
+    
+    networks:
+      - mongo_net
+    
+    volumes:
+      - mongo_vol:/data/db
+    
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongouser
+      MONGO_INITDB_ROOT_PASSWORD: mongopwd
