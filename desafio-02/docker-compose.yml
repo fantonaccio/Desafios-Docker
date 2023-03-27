@@ -22,8 +22,6 @@ services:
 
     environment:
       PMA_HOST: db_mysql
-      PMA_USER: root
-      PMA_PASSWORD: mysqlpwd
      
 
   db_mysql:
