@@ -1,0 +1,40 @@
+version: '3.8'
+
+networks:
+  pg_net:
+    driver: bridge
+
+services:
+  pgadmin:
+    image: dpage/pgadmin4
+    
+    ports:
+      - 80:80
+    
+    networks:
+      - pg_net
+    
+    depends_on:
+      - db_pg
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@local.com
+      PGADMIN_DEFAULT_PASSWORD: pgsqlpwd
+
+  db_pg:
+    image:  postgres:15.2-alpine 
+
+    ports:
+      - 5432:5432
+    
+    networks:
+      - pg_net
+    
+    volumes:
+      - /srv/postgres:/var/lib/postgresql/data 
+    
+    environment:
+        POSTGRES_USER: admin
+        POSTGRES_PASSWORD: pgsqlpwd
+        POSTGRES_HOST_AUTH_METHOD: password
+
+  
