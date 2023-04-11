@@ -1,0 +1,49 @@
+version: '3.8'
+
+volumes:
+  mysql_vol:
+
+networks:
+  mysql_net:
+    driver: bridge
+
+services:
+  wordpress:
+    image: wordpress
+    
+    ports:
+      - 80:80
+    
+    networks:
+      - mysql_net
+
+    volumes:
+      - /srv/wordpress/html:/var/www/html
+    
+    depends_on:
+      - db_mysql
+
+    environment:
+      WORDPRESS_DB_HOST: db_mysql
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: mysqlpwd
+      WORDPRESS_DB_NAME: wordpress
+   
+     
+  db_mysql:
+    image: mysql:5.7
+
+    ports:
+      - 3306:3306
+    
+    networks:
+      - mysql_net
+    
+    volumes:
+      - /srv/mysql:/var/lib/mysql
+    
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: mysqlpwd
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
