@@ -1,0 +1,54 @@
+version: '3.8'
+
+networks:
+  pg_net:
+    driver: bridge
+
+services:
+  pgadmin:
+    image: dpage/pgadmin4
+    
+    ports:
+      - 8080:80
+    
+    networks:
+      - pg_net
+    
+    depends_on:
+      - db_pg
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@local.com
+      PGADMIN_DEFAULT_PASSWORD: pgsqlpwd
+
+  db_pg:
+    image:  postgres:15.2-alpine 
+
+    ports:
+      - 5432:5432
+    
+    networks:
+      - pg_net
+    
+    volumes:
+      - /srv/postgres:/var/lib/postgresql/data 
+    
+    environment:
+      POSTGRES_DB: kubedevnews
+      POSTGRES_USER: kubedevnews
+      POSTGRES_PASSWORD: Pg#123
+      POSTGRES_HOST_AUTH_METHOD: password
+
+  kube_news:
+    image: antonaccio/kude_new:v1
+    build: 
+      dockerfile: ./Dockerfile
+      context: ./
+    ports:
+      - 80:8080
+    networks:
+      - pg_net
+    environment:
+      DB_DATABASE: kubedevnews
+      DB_USERNAME: kubedevnews 
+      DB_PASSWORD: Pg#123
+      DB_HOST: db_pg
